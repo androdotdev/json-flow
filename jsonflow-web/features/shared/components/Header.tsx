@@ -1,3 +1,4 @@
+import Link from "next/link";
 import ThemeToggle from "@/features/shared/components/ThemeToggle";
 
 export default function Header() {
@@ -29,7 +30,7 @@ export default function Header() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <a
+          <Link
             className="rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] transition hover:-translate-y-0.5 cursor-pointer"
             style={{
               border: "1px solid var(--border)",
@@ -39,10 +40,9 @@ export default function Header() {
             }}
             href="/docs"
             target="_blank"
-            rel="noreferrer"
           >
             Open Docs
-          </a>
+          </Link>
           <ThemeToggle />
         </div>
       </div>

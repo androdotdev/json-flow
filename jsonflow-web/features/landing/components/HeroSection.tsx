@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FiPlay, FiBook } from "react-icons/fi";
 
 export function HeroSection() {
@@ -45,7 +46,7 @@ export function HeroSection() {
 
           {/* CTAs */}
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-            <a
+            <Link
               href="/web"
               className="inline-flex items-center gap-2 rounded-xl px-8 py-4 text-sm font-semibold transition-all hover:scale-105"
               style={{
@@ -55,8 +56,8 @@ export function HeroSection() {
             >
               <FiPlay className="h-4 w-4" />
               Try the Playground
-            </a>
-            <a
+            </Link>
+            <Link
               href="/docs"
               className="inline-flex items-center gap-2 rounded-xl border px-8 py-4 text-sm font-semibold transition-all hover:scale-105"
               style={{
@@ -67,7 +68,7 @@ export function HeroSection() {
             >
               <FiBook className="h-4 w-4" />
               Read Documentation
-            </a>
+            </Link>
           </div>
         </div>
       </div>
