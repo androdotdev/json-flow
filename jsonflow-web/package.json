@@ -11,7 +11,7 @@
   "dependencies": {
     "@andro.dev/jsonflow-engine": "^1.1.0",
     "@monaco-editor/react": "^4.7.0",
-    "cytoscape": "^3.33.1",
+    "cytoscape": "^3.34.0",
     "jotai": "^2.17.1",
     "next": "16.1.6",
     "react": "19.2.3",
