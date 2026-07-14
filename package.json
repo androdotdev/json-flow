@@ -1,0 +1,11 @@
+{
+  "name": "jsonflow",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@10.28.1",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test:run",
+    "lint": "pnpm -C jsonflow-web lint"
+  }
+}

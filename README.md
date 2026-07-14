@@ -7,14 +7,13 @@ Live: https://json-flow-client.vercel.app/
 ## Packages
 
 - `engine/` — `@andro.dev/jsonflow-engine` (Zod validation + parser)
-- `client/` — React + Monaco + Cytoscape UI
-- `docs/` — project docs
+- `jsonflow-web/` — React + Monaco + Cytoscape UI
 
 ## Quick Start
 
 ```bash
 pnpm install
-pnpm -C client dev
+pnpm -C jsonflow-web dev
 ```
 
 ## Engine
@@ -27,6 +26,6 @@ pnpm -C engine test
 ## Client
 
 ```bash
-pnpm -C client dev
-pnpm -C client build
+pnpm -C jsonflow-web dev
+pnpm -C jsonflow-web build
 ```
