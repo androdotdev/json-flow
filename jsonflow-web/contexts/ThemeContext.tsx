@@ -24,7 +24,7 @@ function getStoredTheme(): Theme | null {
 
 function applyTheme(theme: Theme): void {
   if (typeof document === 'undefined') return;
-  
+
   const root = document.documentElement;
   if (theme === 'dark') {
     root.classList.add('dark');
@@ -33,10 +33,18 @@ function applyTheme(theme: Theme): void {
   }
 }
 
+function getInitialTheme(): Theme {
+  return getStoredTheme() ?? 'dark';
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('dark');
-  const [systemTheme, setSystemTheme] = useState<Theme>('dark');
-  const [mounted, setMounted] = useState(false);
+  const [theme, setThemeState] = useState<Theme>(getInitialTheme);
+  const [systemTheme, setSystemTheme] = useState<Theme>(getSystemTheme);
+
+  // Apply the initial theme on mount (client-only — does nothing on server)
+  if (typeof document !== 'undefined') {
+    applyTheme(theme);
+  }
 
   const setTheme = useCallback((newTheme: Theme) => {
     setThemeState(newTheme);
@@ -52,36 +60,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setTheme(theme === 'light' ? 'dark' : 'light');
   }, [theme, setTheme]);
 
-  // Initialize theme on mount
-  useEffect(() => {
-    setMounted(true);
-    
-    // Get stored theme or fall back to dark default
-    const storedTheme = getStoredTheme();
-    const systemPref = getSystemTheme();
-
-    setSystemTheme(systemPref);
-    
-    if (storedTheme) {
-      setThemeState(storedTheme);
-      applyTheme(storedTheme);
-    } else {
-      setThemeState('dark');
-      applyTheme('dark');
-    }
-  }, []);
-
   // Listen for system theme changes
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
+
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    
+
     const handleChange = () => {
       const newSystemTheme = mediaQuery.matches ? 'dark' : 'light';
       setSystemTheme(newSystemTheme);
     };
-    
+
     mediaQuery.addEventListener('change', handleChange);
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
@@ -92,15 +81,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setTheme,
     toggleTheme,
   };
-
-  // Prevent flash of wrong theme
-  if (!mounted) {
-    return (
-      <ThemeContext.Provider value={value}>
-        <div suppressHydrationWarning>{children}</div>
-      </ThemeContext.Provider>
-    );
-  }
 
   return (
     <ThemeContext.Provider value={value}>
