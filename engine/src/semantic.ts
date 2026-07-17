@@ -9,6 +9,7 @@ export type SemanticIssue =
   | {
       type: "unreachable-node";
       nodeId: string;
+      index: number;
     };
 
 export type SemanticMeta = {
@@ -64,34 +65,25 @@ const detectCycle = (adjacency: Map<string, string[]>) => {
   return isCyclic;
 };
 
+/**
+ * Per spec: a node is unreachable if it has no incoming AND no outgoing edges.
+ * i.e., it's completely isolated from the graph.
+ */
 const findUnreachable = (
   adjacency: Map<string, string[]>,
   incoming: Map<string, number>,
 ) => {
-  const roots = Array.from(incoming.entries())
-    .filter(([, count]) => count === 0)
-    .map(([id]) => id);
+  const unreachable: string[] = [];
 
-  if (roots.length === 0) {
-    return [] as string[];
+  for (const [nodeId] of adjacency) {
+    const outdegree = adjacency.get(nodeId)?.length ?? 0;
+    const indegree = incoming.get(nodeId) ?? 0;
+    if (indegree === 0 && outdegree === 0) {
+      unreachable.push(nodeId);
+    }
   }
 
-  const reachable = new Set<string>();
-  const queue = [...roots];
-
-  while (queue.length > 0) {
-    const current = queue.shift();
-    if (!current || reachable.has(current)) continue;
-    reachable.add(current);
-    const neighbors = adjacency.get(current) ?? [];
-    neighbors.forEach((next) => {
-      if (!reachable.has(next)) {
-        queue.push(next);
-      }
-    });
-  }
-
-  return Array.from(adjacency.keys()).filter((id) => !reachable.has(id));
+  return unreachable;
 };
 
 export const analyzeGraph = (graph: Graph): SemanticResult => {
@@ -119,8 +111,22 @@ export const analyzeGraph = (graph: Graph): SemanticResult => {
   const isCyclic = detectCycle(adjacency);
 
   const unreachable = findUnreachable(adjacency, incoming);
+  // Track array indices for traceability — each node gets its position
+  const nodeIndex = new Map<string, number>();
+  graph.nodes.forEach((node, i) => {
+    // For duplicate IDs, only the last index is stored;
+    // the semantic issue still reports the correct index per occurrence
+    if (!nodeIndex.has(node.id)) {
+      nodeIndex.set(node.id, i);
+    }
+  });
+
   unreachable.forEach((nodeId) => {
-    issues.push({ type: "unreachable-node", nodeId });
+    issues.push({
+      type: "unreachable-node",
+      nodeId,
+      index: nodeIndex.get(nodeId) ?? -1,
+    });
   });
 
   return {

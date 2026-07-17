@@ -64,7 +64,7 @@ After validation, the engine returns an `EngineGraph`:
 | Issue Type | Description |
 |------------|-------------|
 | `edge-missing-node` | An edge references a node ID that doesn't exist in `nodes` |
-| `unreachable-node` | A node has no incoming and no outgoing edges |
+| `unreachable-node` | A node has no incoming and no outgoing edges. The `index` field gives the node's position in the input array for traceability |
 
 ---
 
